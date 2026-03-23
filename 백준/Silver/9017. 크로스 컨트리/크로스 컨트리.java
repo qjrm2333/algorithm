@@ -1,74 +1,69 @@
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
 
-    public static class Team {
-        int teamNo;
-        int member = 1;
-        int score = 0;
-        int check = 0;
-        int last = 0;
-
-        public Team(int teamNo) {
-            this.teamNo = teamNo;
-        }
-
-        public int compare(Team o1, Team o2) {
-            if (o1.score != o2.score) {
-                return o2.score - o1.score;
-            } else {
-                return o2.last - o1.last;
-            }
-        }
+    static class Team {
+        int member;
+        int score;
+        int check;
+        int last;
     }
 
     public static void main(String[] args) throws Exception {
         int T = Integer.parseInt(br.readLine());
 
-        for (int i = 0; i < T; i++) {
+        while (T-- > 0) {
             int N = Integer.parseInt(br.readLine());
             st = new StringTokenizer(br.readLine());
+
             int[] rank = new int[N];
+            Team[] teams = new Team[201];
 
-            Map<Integer, Team> teams = new HashMap<>();
+            for (int i = 0; i < N; i++) {
+                int t = Integer.parseInt(st.nextToken());
+                rank[i] = t;
 
-            for (int j = 0; j < N; j++) {
-                rank[j] = Integer.parseInt(st.nextToken());
-                if (teams.containsKey(rank[j])) {
-                    teams.get(rank[j]).member++;
-                } else {
-                    teams.put(rank[j], new Team(rank[j]));
-                }
+                if (teams[t] == null) teams[t] = new Team();
+                teams[t].member++;
             }
 
             int score = 1;
-            for (int j = 0; j < N; j++) {
-                Team team = teams.get(rank[j]);
+
+            for (int i = 0; i < N; i++) {
+                int t = rank[i];
+                Team team = teams[t];
+
                 if (team.member == 6) {
                     if (team.check < 4) {
                         team.score += score;
                     } else if (team.check == 4) {
-                        team.last = j;
+                        team.last = i;
                     }
                     team.check++;
                     score++;
                 }
             }
 
-            Team minTeam = teams.values()
-                    .stream()
-                    .filter(e -> e.score != 0)
-                    .min(Comparator.comparingInt((Team e) ->
-                                    e.score)
-                            .thenComparingInt(e -> e.last))
-                    .orElse(null);
+            int answer = 0;
+            int minScore = Integer.MAX_VALUE;
+            int minLast = Integer.MAX_VALUE;
 
-            System.out.println(minTeam.teamNo);
+            for (int i = 1; i <= 200; i++) {
+                Team t = teams[i];
+                if (t == null || t.member != 6) continue;
+
+                if (t.score < minScore || 
+                   (t.score == minScore && t.last < minLast)) {
+                    minScore = t.score;
+                    minLast = t.last;
+                    answer = i;
+                }
+            }
+
+            System.out.println(answer);
         }
     }
 }
