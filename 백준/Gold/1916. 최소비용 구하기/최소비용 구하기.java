@@ -1,87 +1,80 @@
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    public static int n;
-    public static List<Node>[] graph;
-    public static boolean[] visited;
-    public static int[] dist;
-    public static int s;
-    public static int e;
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
 
-    public static void main(String[] args) throws IOException {
-        init();
-        dijkstra();
-        System.out.println(dist[e]);
+    static int N, M;
+    static List<Node>[] arr;
+    static boolean[] visited;
+    static int[] values;
+
+    static class Node{
+        int end;
+        int value;
+        public Node(int end, int value){
+            this.end = end;
+            this.value = value;
+        }
     }
 
-    public static void dijkstra() {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(s, 0));
-        dist[s] = 0;
+    public static void main(String[] args) throws Exception {
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(br.readLine());
 
-        while (!pq.isEmpty()) {
-            Node now = pq.poll();
+        arr = new List[N];
+        visited = new boolean[N];
+        values = new int[N];
 
-            if (visited[now.end]) {
-                continue;
+        for(int i = 0; i < N; i++){
+            arr[i] = new ArrayList<>();
+            values[i] = 100000000;
+        }
+
+        for(int i = 0; i < M; i++){
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken())-1;
+            int e = Integer.parseInt(st.nextToken())-1;
+            arr[s].add(new Node(e, Integer.parseInt(st.nextToken())));
+        }
+
+        st = new StringTokenizer(br.readLine());
+        int start = Integer.parseInt(st.nextToken())-1;
+        int end = Integer.parseInt(st.nextToken())-1;
+
+        dijkstra(start);
+
+        bw.write(values[end]+"");
+        bw.flush();
+    }
+
+    static void dijkstra(int start) throws IOException {
+        PriorityQueue<Node> pq = new PriorityQueue<Node>(new Comparator<Node>(){
+            @Override
+            public int compare(Node o1, Node o2) {
+                return o1.value - o2.value;
             }
-            visited[now.end] = true;
+        });
+        pq.add(new Node(start, 0));
+        values[start] = 0;
 
-            for (Node next : graph[now.end]) {
-                if (visited[next.end] || dist[next.end] <= dist[now.end] + next.weight) {
-                    continue;
+        while(!pq.isEmpty()){
+            Node cur = pq.poll();
+            if(visited[cur.end]){ continue; }
+            visited[cur.end] = true;
+
+//            bw.write(cur.end+" "+cur.value+"\n");
+
+            for(Node nxt : arr[cur.end]){
+                if(!visited[nxt.end] && values[nxt.end] > values[cur.end] + nxt.value){
+                    values[nxt.end] = values[cur.end]+nxt.value;
+                    pq.add(new Node(nxt.end, values[nxt.end]));
                 }
-
-                dist[next.end] = dist[now.end] + next.weight;
-                pq.add(new Node(next.end, dist[next.end]));
             }
         }
     }
-
-    public static void init() throws IOException {
-        n = read();
-
-        graph = new List[n + 1];
-        visited = new boolean[n + 1];
-        dist = new int[n + 1];
-
-        for (int i = 1; i <= n; i++) {
-            graph[i] = new ArrayList<>();
-            dist[i] = Integer.MAX_VALUE;
-        }
-
-        int m = read();
-        while (m-- > 0) {
-            graph[read()].add(new Node(read(), read()));
-        }
-
-        s = read();
-        e = read();
-    }
-    
-    public static int read() throws IOException {
-        int c, n = System.in.read() & 15;
-        while ((c = System.in.read()) > 32) {
-            n = (n << 3) + (n << 1) + (c & 15);
-        }
-        return n;
-    }
 }
 
-class Node implements Comparable<Node> {
-    int end;
-    int weight;
-
-    public Node(int end, int weight) {
-        this.end = end;
-        this.weight = weight;
-    }
-
-    @Override
-    public int compareTo(Node o) {
-        return this.weight - o.weight;
-    }
-}
