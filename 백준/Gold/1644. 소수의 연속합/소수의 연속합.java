@@ -16,29 +16,28 @@ public class Main {
         decimal = new boolean[N+1];
         Arrays.fill(decimal, true);
 
-        for(int i = 2; i <= N; i++){
+        for(int i = 2; i <= Math.sqrt(N); i++){
             if(decimal[i]){
-                for(int j = 2*i; j <= N; j+=i){
+                for(int j = i*i; j <= N; j+=i){
                     decimal[j] = false;
                 }
+            }
+        }
+
+        for(int i = 2; i <= N; i++){
+            if(decimal[i]){
                 nums.add(i);
             }
         }
 
-        int start = 0, end = 0, sum = 2, cnt = 0;
-        while(start <= end && end < nums.size()){
-            if(sum > N){
+        int start = 0, end = 0, sum = 0, cnt = 0;
+        while(true){
+            if(sum >= N){
+                if(sum == N) cnt++;
                 sum -= nums.get(start++);
-            } else if(sum == N){
-                cnt++;
-                sum -= nums.get(start++);
-                if(++end < nums.size()){
-                    sum += nums.get(end);
-                }
             } else {
-                if(++end < nums.size()){
-                    sum += nums.get(end);
-                }
+                if(end == nums.size()) break;
+                sum += nums.get(end++);
             }
         }
 
