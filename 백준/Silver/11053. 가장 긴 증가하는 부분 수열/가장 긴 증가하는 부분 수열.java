@@ -1,37 +1,36 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
 
-		int n = Integer.parseInt(br.readLine());
-		int [] arr = new int[n];
+    static int N;
+    static int[] arr;
+    static int[] dp;
 
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		for(int i = 0; i < n; i++) {
-			arr[i] = Integer.parseInt(st.nextToken());
-		}
+    public static void main(String[] args) throws Exception {
+        N = Integer.parseInt(br.readLine());
+        arr = new int[N];
+        dp = new int[N];
+        st = new StringTokenizer(br.readLine());
+        for(int i = 0; i < N; i++){
+            arr[i] = Integer.parseInt(st.nextToken());
+        }
 
-		int[] dp = new int[n];
-		int max = 0;
-		for(int i = 0; i < n; i++) dp[i] = 1;
-		
-		for (int i = 0; i < n; i++) {
-			for(int j = 0; j < i; j++) {
-				if(arr[i] > arr[j]) {
-					dp[i] = Math.max(dp[i],  dp[j]+1);
-				}
-			}
-			max = Math.max(max, dp[i]);
-		}
+        int max = 0;
+        for(int i = 0; i < N; i++){
+            dp[i] = 1;
+            for(int j = 0; j < i; j++){
+                if(arr[i] > arr[j]){
+                    dp[i] = Math.max(dp[j]+1, dp[i]);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
 
-		bw.write(Integer.toString(max) + "\n");
-		bw.flush();
-	}
+        bw.write(max+"");
+        bw.flush();
+    }
 }
