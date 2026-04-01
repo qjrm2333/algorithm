@@ -35,8 +35,6 @@ public class Main {
         if(x <= 1) return 0;
 
         if(x < total[l-1]+2) return level(l-1, x-1);
-        else if(x == total[l-1]+2) return pat[l-1]+1;
         else return pat[l-1]+1+level(l-1, x-total[l-1]-2);
-
     }
 }
