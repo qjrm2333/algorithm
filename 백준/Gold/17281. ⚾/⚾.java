@@ -54,75 +54,19 @@ public class Main {
         int idx = 0;
         int point = 0;
         for(int round = 0; round < N; round++){
-//            System.out.println("start "+round);
-            boolean first = false;
-            boolean second = false;
-            boolean third = false;
+            boolean[] base = new boolean[3];
             int outCnt = 0;
 
             while(outCnt < 3){
                 int player = players[idx++%9];
                 int result = member[player][round];
-//                System.out.println(((idx-1)%9)+"th player "+player+" got "+result);
 
                 if(result == 0){
                     outCnt++;
-                } else if(result == 1){
-                    if(third){
-                        third = false;
-                        point++;
-                    }
-                    if(second){
-                        second = false;
-                        third = true;
-                    }
-                    if(first){
-                        second = true;
-                    }
-                    first = true;
-                } else if(result == 2){
-                    if(third){
-                        third = false;
-                        point++;
-                    }
-                    if(second){
-                        point++;
-                    }
-                    if(first){
-                        first = false;
-                        third = true;
-                    }
-                    second = true;
-                } else if(result == 3){
-                    if(third){
-                        point++;
-                    }
-                    if(second){
-                        second = false;
-                        point++;
-                    }
-                    if(first){
-                        first = false;
-                        point++;
-                    }
-                    third = true;
-                } else if(result == 4){
-                    if(third){
-                        third = false;
-                        point++;
-                    }
-                    if(second){
-                        second = false;
-                        point++;
-                    }
-                    if(first){
-                        first = false;
-                        point++;
-                    }
-                    point++;
+                } else {
+                    point += getHit(base, result);
                 }
             }
-//            System.out.println("total "+point);
         }
         if(max < point){
             max = point;
@@ -130,5 +74,33 @@ public class Main {
                 ans[i] = players[i];
             }
         }
+    }
+
+    static int getHit(boolean[] base, int result){
+        int point = 0;
+
+        if(result == 4){
+            for(int i = 0; i < 3; i++){
+                if(base[i]){
+                    point++;
+                    base[i] = false;
+                }
+            }
+            point++;
+            return point;
+        }
+
+        for(int i = 0; i < result; i++){
+            if(base[2]){
+                base[2] = false;
+                point++;
+            }
+            for(int j = 2; j > 0; j--){
+                base[j] = base[j-1];
+                base[j-1] = false;
+            }
+        }
+        base[result-1] = true;
+        return point;
     }
 }
